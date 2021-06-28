@@ -49,9 +49,9 @@ export default {
      console.log(this.song)
     },
     async showMedia(){
-      const song = await this.$http.get('https://wethesauce.com/wp-json/wp/v2/media?per_page=10');
+      const song = await this.$http.get('https://wethesauce.com/wp-json/wp/v2/posts?per_page=10');
       // this.songs = this.shuffleArray(song.data)
-      this.media = song.data;
+      this.media = shuffleArray(song.data);
       // for(let i = 0; i < songList.length; i++){
       //   this.songs.push(songList[Math.floor(Math.random()*songList.length)])
       // }
