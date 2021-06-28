@@ -1,40 +1,79 @@
 <template>
   <div class="hello">
-    <h1>{{ msg }}</h1>
-    <p>
-      For a guide and recipes on how to configure / customize this project,<br>
-      check out the
-      <a href="https://cli.vuejs.org" target="_blank" rel="noopener">vue-cli documentation</a>.
-    </p>
-    <h3>Installed CLI Plugins</h3>
-    <ul>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-babel" target="_blank" rel="noopener">babel</a></li>
-      <li><a href="https://github.com/vuejs/vue-cli/tree/dev/packages/%40vue/cli-plugin-eslint" target="_blank" rel="noopener">eslint</a></li>
-    </ul>
-    <h3>Essential Links</h3>
-    <ul>
-      <li><a href="https://vuejs.org" target="_blank" rel="noopener">Core Docs</a></li>
-      <li><a href="https://forum.vuejs.org" target="_blank" rel="noopener">Forum</a></li>
-      <li><a href="https://chat.vuejs.org" target="_blank" rel="noopener">Community Chat</a></li>
-      <li><a href="https://twitter.com/vuejs" target="_blank" rel="noopener">Twitter</a></li>
-      <li><a href="https://news.vuejs.org" target="_blank" rel="noopener">News</a></li>
-    </ul>
-    <h3>Ecosystem</h3>
-    <ul>
-      <li><a href="https://router.vuejs.org" target="_blank" rel="noopener">vue-router</a></li>
-      <li><a href="https://vuex.vuejs.org" target="_blank" rel="noopener">vuex</a></li>
-      <li><a href="https://github.com/vuejs/vue-devtools#vue-devtools" target="_blank" rel="noopener">vue-devtools</a></li>
-      <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
-      <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
-    </ul>
+    <h1>WeTheSauce</h1>
+    <button @click="showSong">Get music</button>
+    <button @click="showMedia">Get media</button>
+    <div v-if="songs">
+      <li v-for="song in songs" :key="song.id">
+        <v-card>
+          <img :src="song.jetpack_featured_media_url" alt="" width="500" height="500">
+          <h5 class="text-truncate">{{song.title}}</h5>
+        </v-card>
+      </li>
+    </div>
+    <div v-if="media">
+      <li v-for="song in media" :key="song.id">
+        <v-card @click="playSong(song.source_url)">
+          <video>
+            <source :src="song.source_url">
+          </video>
+        </v-card>
+      </li>
+    </div>
   </div>
 </template>
 
 <script>
+import {Howl} from 'howler';
 export default {
   name: 'HelloWorld',
   props: {
     msg: String
+  },
+  data(){
+    return{
+      songs: [],
+      media:{},
+      img: ''
+    }
+  },
+  methods: {
+    async showSong(){
+      const song = await this.$http.get('https://wethesauce.com/wp-json/wp/v2/posts?per_page=10');
+      // this.songs = this.shuffleArray(song.data)
+      this.songs = song.data;
+      // for(let i = 0; i < songList.length; i++){
+      //   this.songs.push(songList[Math.floor(Math.random()*songList.length)])
+      // }
+      // this.songs = song.data
+     console.log(this.song)
+    },
+    async showMedia(){
+      const song = await this.$http.get('https://wethesauce.com/wp-json/wp/v2/media?per_page=10');
+      // this.songs = this.shuffleArray(song.data)
+      this.media = song.data;
+      // for(let i = 0; i < songList.length; i++){
+      //   this.songs.push(songList[Math.floor(Math.random()*songList.length)])
+      // }
+      // this.songs = song.data
+     console.log(this.media)
+    },
+    playSong(url){
+      var songUrl = new Howl({
+        src: [url]
+      })
+      console.log(songUrl);
+      songUrl.play();
+    },
+    shuffleArray(array) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+    return array;
+}
   }
 }
 </script>
@@ -51,8 +90,17 @@ ul {
 li {
   display: inline-block;
   margin: 0 10px;
+  text-overflow: ellipsis;
 }
 a {
   color: #42b983;
+}
+v-card{
+  height: 100px;
+  width: 100px;
+  display: block;
+}
+.title{
+text-overflow: ellipsis;
 }
 </style>
